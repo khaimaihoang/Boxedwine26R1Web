@@ -9,7 +9,9 @@
         let DEFAULT_DISABLE_HIDE_CURSOR = false;
         let DEFAULT_APP_DIRECTORY = "/home/username/.wine/dosdevices/c:/files";
         let DEFAULT_BPP = 32;
-        let DEFAULT_FRAME_SKIP = "0";
+        let DEFAULT_FRAME_SKIP = "30";  // skip frames to target 30fps when emulation is slow
+        let DEFAULT_CPU = "p3";          // Pentium 3 — needed for SSE instructions used by many games
+        let DEFAULT_RESOLUTION = "800x600"; // standard game resolution
         let DEFAULT_ROOT_ZIP_FILE = "boxedwine.zip";
         //params
         let Config = {};
@@ -127,38 +129,34 @@
         function getCPU() {
             var cpu = getParameter("cpu");
             if(!allowParameterOverride()){
-                cpu = "";
+                cpu = DEFAULT_CPU;
             }else if(cpu == "p2") {
             }else if(cpu == "p3") {
             }else{
-                cpu = "";
+                cpu = DEFAULT_CPU;
             }
-            if(cpu.length > 0) {
-            	console.log("setting CPU to: "+cpu);
-            }
+            console.log("setting CPU to: "+cpu);
             return cpu;
         }
         function getResolution() {
             var resolution = getParameter("resolution");
             if(!allowParameterOverride()){
-                resolution = null;
+                resolution = DEFAULT_RESOLUTION;
             }else{
-            	if (resolution != null) {
+            	if (resolution != null && resolution.length > 0) {
             		if (resolution.indexOf('x') > -1) {
             			let resNumbers = resolution.split('x');
             			if (!(resNumbers.length == 2 && isNumber(resNumbers[0]) && isNumber(resNumbers[1]))) {
-            				resolution = null;
-            			}            				
+            				resolution = DEFAULT_RESOLUTION;
+            			}            			
             		} else {
-            			resolution = null;
+            			resolution = DEFAULT_RESOLUTION;
             		}
+            	} else {
+            		resolution = DEFAULT_RESOLUTION;
             	}
             }
-            if (resolution == null) {
-            	console.log("not setting Resolution");
-            } else {
-            	console.log("setting Resolution to: "+resolution);
-            }
+            console.log("setting Resolution to: "+resolution);
             return resolution;
         }
         function isNumber(num) {
@@ -687,8 +685,8 @@
           // application robust, you may want to override this behavior before shipping!
           // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
           canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
-          canvas.width  = 800;
-          canvas.height = 600;
+          canvas.width  = 1024;
+          canvas.height = 768;
           return canvas;
         })(),
         setStatus: function(text) {
